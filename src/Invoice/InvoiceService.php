@@ -161,16 +161,18 @@ class InvoiceService
         return (string) $xml->RESPONSE->STATUS;
     }
 
-    public function sendByPostInvoice(InvoiceEntity $entity): InvoiceEntity
+    public function sendByPostInvoice(InvoiceEntity $entity): string
     {
         $this->checkErrors($this->validator->validateRequiredInvoiceId($entity));
 
         $this->xmlService->setService('invoice.sendbypost');
         $this->xmlService->setData($entity->getXmlData());
 
-        $this->apiClient->post($this->xmlService->getXml());
+        $response = $this->apiClient->post($this->xmlService->getXml());
 
-        return $entity;
+        $xml = new \SimpleXMLElement((string) $response->getBody());
+
+        return (string) $xml->RESPONSE->STATUS;
     }
 
     public function setPaidInvoice(InvoiceEntity $entity): InvoiceEntity
